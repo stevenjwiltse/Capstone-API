@@ -17,15 +17,12 @@ from routers.email_router import email_router
 from routers.thread_router import thread_router
 from routers.message_router import message_router
 
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     yield
     if async_session_manager._engine is not None:
         # Close the DB connection
         await async_session_manager.close()
-
 
 app = FastAPI(lifespan=lifespan)
 
@@ -35,13 +32,11 @@ bearer_scheme = HTTPBearer()
 # Middleware configuration for Frontend-Backend communication
 app.add_middleware(
     CORSMiddleware,
-
-    allow_origins=settings.get_config()["backend_cors_origins"],
+    allow_origins=settings.backend_cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"]
+    allow_headers=["*"],
 )
-
 
 # Connect routers
 app.include_router(auth_router)
@@ -60,7 +55,7 @@ async def root():
     return {"Barbershop App"}
 
 @app.get("/healthz")
-async def root():
+async def health_check():
     return {"healthy": True}
 
 if __name__ == "__main__":
