@@ -54,22 +54,31 @@ services:
       - barber-shop-network
 
   api:
-    image: python:3.12
-    hostname: barber-shop-api
-    restart: always
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: barber-shop-api
     depends_on:
       db:
         condition: service_healthy
     ports:
       - "8000:8000"
-    working_dir: /app
-    volumes:
-      - ./:/app
     env_file:
       - .env
-    command: sh scripts/start.sh
     networks:
       - barber-shop-network
+    restart: unless-stopped
+
+  barber-shop-ui:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    container_name: barber-shop-ui
+    ports:
+      - "80:80"
+    networks:
+      - barber-shop-network
+    restart: unless-stopped
 
   smtp:
     image: gessnerfl/fake-smtp-server:latest
@@ -77,9 +86,9 @@ services:
     env_file:
       - .env
     ports:
-      - "8125:8025"  # SMTP port
-      - "8180:8080"  # Web UI
-      - "8181:8081"  # Management API
+      - "8125:8025"
+      - "8180:8080"
+      - "8181:8081"
     networks:
       - barber-shop-network
 
