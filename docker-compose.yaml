@@ -69,17 +69,6 @@ services:
       - barber-shop-network
     restart: unless-stopped
 
-  barber-shop-ui:
-    build:
-      context: ./ui
-      dockerfile: Dockerfile
-    container_name: barber-shop-ui
-    ports:
-      - "80:80"
-    networks:
-      - barber-shop-network
-    restart: unless-stopped
-
   smtp:
     image: gessnerfl/fake-smtp-server:latest
     container_name: fake-smtp
